@@ -1,7 +1,7 @@
 import {ethers} from "ethers"
 import Web3Modal from 'web3modal'
 
-import { ZombeFactoryAddress, ZombieFactoryAbi } from "@/Context/Constant";
+import { ZombieAttackJsonAddress, ZombieAttackJsonAbi } from "@/Context/Constant";
 
 export const CheckIfWalletConnected = async() => {
     try {
@@ -31,7 +31,7 @@ export const conectWallet = async() => {
     }
 }
 
-const fetchContract = (signerOrProvider) => new ethers.Contract(ZombeFactoryAddress, ZombieFactoryAbi, signerOrProvider)
+const fetchContract = (signerOrProvider) => new ethers.Contract(ZombieAttackJsonAddress, ZombieAttackJsonAbi, signerOrProvider)
 
 export const connectingWithContract = async() => {
     try {

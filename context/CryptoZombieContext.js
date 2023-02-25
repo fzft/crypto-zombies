@@ -1,20 +1,69 @@
 import React, {useState} from "react";
 import {createContext} from "react";
+import { useEffect } from "react";
 import { CheckIfWalletConnected, conectWallet, connectingWithContract } from "@/utils/apiFeature";
 
 export const CryptoZombieContext = createContext();
 
 export const CryptoZombieProvider = ({children}) => {
-    const [zombie, setZombie] = useState([]);
+    const [zombies, setZombies] = useState([]);
     const [zombieName, setZombieName] = useState("");
     const [zombieDna, setZombieDna] = useState("");
     const [zombieId, setZombieId] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [account, setAccount] = useState("");
+    const [ids, setIds] = useState([]);
+    const [error, setError] = useState("");
 
-    const newZombie = async (name) => {
-        const contract = await connectingWithContract();
-        const tx = await contract.createRandomZombie(name);
-        await tx.wait();
-    } 
+
+    const getZombiesByOwner =  async () => {
+      try {
+        const contract = await connectingWithContract()
+        const account = await conectWallet()
+        setAccount(account)
+        const ids = await contract.getZombiesByOwner(account)
+        setIds(ids)
+      } catch (error) {
+        console.log(error)
+        setError(error)
+      }
+    }
+
+    const getZombiedetails = async (id) => {
+      try {
+        const contract = await connectingWithContract()
+        const zombie = await contract.zombies(id)
+        return zombie
+      } catch (error) {
+        setError(error)
+      }
+    }
+
+    const feedOnKitty = async (zombieId, kittyId) => {
+      try {
+        const contract = await connectingWithContract()
+        const feedOnKittyTx = await contract.feedOnKitty(zombieId, kittyId)
+        setLoading(true);
+        await feedOnKittyTx.wait();
+        setLoading(false);
+      } catch (error) {
+        console.log(error)
+        setError(error)
+      }
+    }
+
+    const createRandomZombie = async (name) => {
+      try {
+        const contract = await connectingWithContract()
+        const createZombieTx = await contract.createRandomZombie(name)
+        setLoading(true);
+        await createZombieTx.wait();
+        setLoading(false);
+      } catch (error) {
+          console.log(error)
+          setError(error)
+      }
+    }
 
     function generateZombie(id, name, dna) {
         let dnaStr = String(dna)
@@ -42,5 +91,16 @@ export const CryptoZombieProvider = ({children}) => {
         }
         return zombieDetails
       }
+
+    useEffect(() => {
+      getZombiesByOwner()
+    }, []);  
+    return (
+        <CryptoZombieContext.Provider value={{getZombiedetails, createRandomZombie, generateZombie,getZombiesByOwner,feedOnKitty,
+          zombies, ids
+        }} >
+            {children}
+        </CryptoZombieContext.Provider>
+    )
 
 }

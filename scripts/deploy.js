@@ -7,13 +7,13 @@
 const hre = require("hardhat");
 
 async function main() {
-  const ZombiesFactory = await hre.ethers.getContractFactory("ZombieFactory");
-  const zombiesFactory = await ZombiesFactory.deploy();
+  const ZombieAttack = await hre.ethers.getContractFactory("ZombieAttack");
+  const zombieAttack = await ZombieAttack.deploy();
 
-  await zombiesFactory.deployed();
+  await zombieAttack.deployed();
 
   console.log(
-    `ZombiesFactory deployed to ${zombiesFactory.address}`
+    `zombieAttack deployed to ${zombieAttack.address}`
   );
 }
 
